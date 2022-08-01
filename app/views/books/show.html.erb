@@ -9,8 +9,10 @@
     <div class='col-md-8 offset-md-1'>
   		<h2>Book detail</h2>
   		<table class='table'>
+  		 <tbody>
   		  <tr>
-          <td><%= link_to(@book.user) do %>
+          <td>
+            <%= link_to(@book.user) do %>
             <%= image_tag @book.user.get_profile_image, size:"50x50" %><br>
             <%= @book.user.name %>
             <% end %>
@@ -21,44 +23,51 @@
               <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %></td>
               <td><%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%></td>
             <% end %>
+                  <td>
+                  <% if @book.favorited_by?(current_user) %>
+                    <p>
+                      <%= link_to book_favorites_path(@book), method: :delete do %>
+                        ♥<%= @book.favorites.count %> いいね
+                      <% end %>
+                    </p>
+                      <% else %>
+                    <p>
+                      <%= link_to book_favorites_path(@book), method: :post do %>
+                        ♡<%= @book.favorites.count %> いいね
+                      <% end %>
+                    </p>
+                      <% end %>
+                  </td>
+                   <td>コメント数：<%= @book.book_comments.count %></td>
         </tr>
-        <div>
-          <tr>
-            <tb>
-              <p>コメント数：<%= @book.book_comments.count %></p>
-                <% @book.book_comments.each do |book_comment| %>
-              <p><%= image_tag book_comment.user.get_profile_image, size:"50x50" %></p>
-                <%= book_comment.user.name %>
-                <%#<%= book_comment.created_at.strftime('%Y/%m/%d') %>   <%#<%= book_comment.comment %>
-                <% if book_comment.user == current_user %>
-                <%= link_to "削除", book_book_comment_path(book_comment.book, book_comment), method: :delete %>
-                <% end %>
-                <% end %>
-                
-                <% if @book.favorited_by?(current_user) %>
-                  <p>
-                    <%= link_to book_favorites_path(@book), method: :delete do %>
-                      ♥<%= @book.favorites.count %> いいね
-                    <% end %>
-                  </p>
-                    <% else %>
-                  <p>
-                    <%= link_to book_favorites_path(@book), method: :post do %>
-                      ♡<%= @book.favorites.count %> いいね
-                    <% end %>
-                  </p>
-                    <% end %>
-            </tb>
-          </tr>
-        </div>
-      </table>
+            </tbody>
+          </table>
+          <table>
+                  <% @book.book_comments.each do |book_comment| %>
+                  <tr>
+                    <td>
+                      <%= link_to(@book.user) do %>
+                    <p><%= image_tag book_comment.user.get_profile_image, size:"50x50" %></p>
+                      <% end %>
+                    </td>
+                    <td><%= book_comment.comment %></td>
+                        <% if book_comment.user == current_user %>
+                    <td><%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), method: :delete, class: "btn btn-sm btn-danger"%></td>
+                      <% end %>
+                  </tr>
+                    <tr>
+                      <td>
+                        <%= link_to book_comment.user.name, user_path(book_comment.user.id) %>
+                      </td>
+                    </tr>  <%#<%= book_comment.created_at.strftime('%Y/%m/%d') %>   
+                  <% end %>
+            </table>
         <div>
           <%= form_with model: [@book, @book_comment] do |f| %>
-            <%= f.text_area :comment, rows: '5', placeholder: "コメントをここに" %>
+            <%= f.text_area :comment, size: "80x5", placeholder: "コメントをここに" %>
             <%= f.submit "送信する" %>
           <% end %>
         </div>
-
     </div>
   </div>
 </div>
