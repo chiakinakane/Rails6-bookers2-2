@@ -23,6 +23,12 @@
               <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %></td>
               <td><%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%></td>
             <% end %>
+            <td id = "favorite_<%= @book.id %>">
+             <%= render partial: "favorites/favorite", locals: { book: @book } %>
+            </td>
+<%
+=begin
+ %>
                   <td>
                   <% if @book.favorited_by?(current_user) %>
                     <p>
@@ -38,11 +44,22 @@
                     </p>
                       <% end %>
                   </td>
+<%
+=end
+%>
                    <td>コメント数：<%= @book.book_comments.count %></td>
         </tr>
             </tbody>
           </table>
-          <table>
+          <table id="comment_list">
+            <%=render"book_comments/comment_list",book:@book%>
+          </table>
+          <div id="comment_form">
+            <%=render"book_comments/comment_form", book:@book, book_comment:@book_comment%>
+          </div>
+<%
+=begin
+%>
                   <% @book.book_comments.each do |book_comment| %>
                   <tr>
                     <td>
@@ -52,7 +69,7 @@
                     </td>
                     <td><%= book_comment.comment %></td>
                         <% if book_comment.user == current_user %>
-                    <td><%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), method: :delete, class: "btn btn-sm btn-danger"%></td>
+                    <td><%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), method: :delete, remote:true, class: "btn btn-sm btn-danger"%></td>
                       <% end %>
                   </tr>
                     <tr>
@@ -61,13 +78,21 @@
                       </td>
                     </tr>  <%#<%= book_comment.created_at.strftime('%Y/%m/%d') %>   
                   <% end %>
-            </table>
-        <div>
-          <%= form_with model: [@book, @book_comment] do |f| %>
+<%
+=end
+%>
+         
+          <%
+=begin
+%>
+          <%= form_with (model: [@book, @book_comment],local: false) do |f| %>
             <%= f.text_area :comment, size: "80x5", placeholder: "コメントをここに" %>
             <%= f.submit "送信する" %>
           <% end %>
-        </div>
+          <%
+=end
+%>
+
     </div>
   </div>
 </div>
