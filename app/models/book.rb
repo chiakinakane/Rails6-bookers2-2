@@ -4,6 +4,7 @@ class Book < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorited_users, through: :favorites, source: :user
   #has_many :favorited_users, through: :likes, source: :user
+  has_many :view_counts, dependent: :destroy
 
   
   validates :title,presence:true
