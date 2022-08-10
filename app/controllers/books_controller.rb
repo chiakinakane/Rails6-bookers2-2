@@ -1,7 +1,7 @@
 class BooksController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
-  
+
   def show
     @book = Book.find(params[:id])
     unless ViewCount.find_by(user_id: current_user.id, book_id: @book.id)
@@ -15,7 +15,7 @@ class BooksController < ApplicationController
     to = Time.current.at_end_of_day
     from = (to - 6.day).at_beginning_of_day
     @books = Book.includes(:favorited_users).
-      sort_by {|x|
+      sort_by { |x|
         x.favorited_users.includes(:favorites).where(created_at: from...to).size
       }.reverse
     @book = Book.new
@@ -28,7 +28,7 @@ class BooksController < ApplicationController
       redirect_to book_path(@book), notice: "You have created book successfully."
     else
       @books = Book.all
-      render 'index'
+      render "index"
     end
   end
 
@@ -52,16 +52,14 @@ class BooksController < ApplicationController
   end
 
   private
+    def book_params
+      params.require(:book).permit(:title, :body)
+    end
 
-  def book_params
-    params.require(:book).permit(:title, :body)
-  end
-  
-  def ensure_correct_user
+    def ensure_correct_user
       @book = Book.find(params[:id])
       unless @book.user == current_user
         redirect_to books_path
       end
-  end
-  
+    end
 end
